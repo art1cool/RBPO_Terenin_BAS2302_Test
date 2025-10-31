@@ -1,14 +1,13 @@
-package service;
+package model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-@Getter
-@Builder
-@ToString
+@Data
 public class Artist
 {
-    private final String name;
-    private final String janre;
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String genre;
 }

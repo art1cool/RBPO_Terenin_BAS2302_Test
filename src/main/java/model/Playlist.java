@@ -1,13 +1,13 @@
-package service;
+package model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
-@Getter
-@Builder
-@ToString
+@Data
 public class Playlist {
-    private final String name;
-    private final int number_of_tracks;
+    @NotBlank
+    private String name;
+    @NotNull
+    private User user;
 }

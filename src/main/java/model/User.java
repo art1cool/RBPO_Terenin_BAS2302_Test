@@ -1,12 +1,10 @@
-package service;
+package model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-@Getter
-@Builder
-@ToString
+@Data
 public class User {
-    private final String name;
+    @NotBlank
+    private String name;
 }

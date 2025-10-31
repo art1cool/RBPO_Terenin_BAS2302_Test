@@ -1,13 +1,13 @@
-package service;
+package model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
-@Getter
-@Builder
-@ToString
+@Data
 public class Track {
-    private final String name;
-    private final String artist;
+    @NotBlank
+    private String name;
+    @NotNull
+    private Artist artist;
 }
