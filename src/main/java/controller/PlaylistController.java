@@ -1,9 +1,6 @@
 package controller;
 
-
 import jakarta.validation.Valid;
-//import jakarta.validation.constraints.NotBlank;
-//import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import model.Playlist;
 import org.springframework.http.ResponseEntity;
@@ -40,13 +37,13 @@ public class PlaylistController {
     }
 
     @DeleteMapping("by-name/{name}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('modify')")
     public ResponseEntity<Void> removePlaylist(@PathVariable String name) {
         playlistService.removePlaylist(name);
         return ResponseEntity.noContent().build();
     }
     @PatchMapping("/{name}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('modify')")
     public ResponseEntity<PlaylistEntity> updatePlaylist(
             @PathVariable String name,
             @RequestBody Playlist updatedFields) {

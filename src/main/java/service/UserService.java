@@ -1,22 +1,15 @@
 package service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 import repository.UserRepository;
 import entity.UserEntity;
 import model.User;
-
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.CREATED;
 
 @Service
 @RequiredArgsConstructor
@@ -39,9 +32,7 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = new UserEntity();
         userEntity.setName(userDto.getName());
         userEntity.setEmail(userDto.getEmail());
-        // кодируем пароль перед сохранением!
         userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        // по умолчанию роль — USER (можешь менять)
         if (userEntity.getRole() == null) {
             userEntity.setRole(enums.UserRole.USER);
         }
@@ -58,9 +49,7 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = new UserEntity();
         userEntity.setName(userDto.getName());
         userEntity.setEmail(userDto.getEmail());
-        // кодируем пароль перед сохранением!
         userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        // по умолчанию роль — USER (можешь менять)
         if (userEntity.getRole() == null) {
             userEntity.setRole(enums.UserRole.USER);
         }
@@ -96,14 +85,12 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
 
-        // используем билдера Spring Security User
         org.springframework.security.core.userdetails.User.UserBuilder builder =
                 org.springframework.security.core.userdetails.User.withUsername(userEntity.getEmail());
 
         builder.password(userEntity.getPassword());
         builder.authorities(userEntity.getRole().getGrantedAuthorities());
 
-        // флаги наоборот: builder.accountLocked(true) — если locked = true, то доступ блокируется
         if (userEntity.isAccountLocked()) {
             builder.accountLocked(true);
         }

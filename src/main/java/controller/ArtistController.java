@@ -1,8 +1,6 @@
 package controller;
 
 import jakarta.validation.Valid;
-//import jakarta.validation.constraints.NotBlank;
-//import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +28,7 @@ public class ArtistController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('modify')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtistEntity> addArtist(
             @Valid @RequestBody Artist artist){
         return ResponseEntity.status(CREATED)

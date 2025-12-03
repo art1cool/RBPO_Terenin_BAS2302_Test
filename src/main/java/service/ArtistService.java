@@ -27,7 +27,7 @@ public class ArtistService {
     public ArtistEntity updateArtist(String name, Artist updatedFields) {
         ArtistEntity existing = artistRepository.findByName(name);
         if (existing == null) {
-            return null; // не найден
+            return null;
         }
 
         // Обновляем только переданные поля

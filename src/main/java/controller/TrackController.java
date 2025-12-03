@@ -1,8 +1,6 @@
 package controller;
 
 import jakarta.validation.Valid;
-//import jakarta.validation.constraints.NotBlank;
-//import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import model.Track;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +28,7 @@ public class TrackController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('modify')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TrackEntity> addTrack(
             @Valid @RequestBody Track track){
         return ResponseEntity.status(CREATED)

@@ -17,5 +17,7 @@ spring:
 server:
   port: 8080
 
-greeting:
-  text: "Hello, HTTP!"
+jwt:
+  accessExpiration: 900000
+  refreshExpiration: 604800000
+  secret: SecretniyJwtKluchBIB230111131131

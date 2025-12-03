@@ -2,8 +2,6 @@ package controller;
 
 import entity.AlbumEntity;
 import jakarta.validation.Valid;
-//import jakarta.validation.constraints.NotBlank;
-//import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import model.Album;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +28,7 @@ public class AlbumController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('modify')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AlbumEntity> addAlbum(
             @Valid @RequestBody Album album){
         return ResponseEntity.status(CREATED)

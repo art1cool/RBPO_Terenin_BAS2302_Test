@@ -23,7 +23,6 @@ public class PlaylistEntity {
     @Column(unique = true,  nullable = false)
     private String name;
 
-    //@Column(name = "\"user\"")
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity user;
 }

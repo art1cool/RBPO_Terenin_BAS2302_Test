@@ -1,8 +1,6 @@
 package controller;
 
 import jakarta.validation.Valid;
-//import jakarta.validation.constraints.NotBlank;
-//import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import model.User;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('modify')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserEntity> addUser(
             @Valid @RequestBody User user){
         return ResponseEntity.status(CREATED)
