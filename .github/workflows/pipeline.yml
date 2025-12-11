@@ -18,8 +18,8 @@ jobs:
       postgres:
         env:
           POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: $SQL_USERNAME
+          POSTGRES_PASSWORD: $SQL_PASSWORD
         image: postgres:15
         options: >-
           --health-cmd pg_isready
@@ -30,10 +30,10 @@ jobs:
           - 5432:5432
     steps:
       - run: |
-          echo $SQL_USERNAME
-          echo $SQL_PASSWORD
-          echo $KEYSTORE_PASSWORD
-          echo $JWT_SECRET
+          echo ${{ secrets.SQL_USERNAME }}
+          echo ${{ secrets.SQL_PASSWORD }}
+          echo ${{ secrets.KEYSTORE_PASSWORD }}
+          echo ${{ secrets.JWT_SECRET }}
       - name: Checkout repository
         uses: actions/checkout@v4
 
