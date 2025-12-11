@@ -4,8 +4,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+    username: ${SQL_USERNAME}
+    password: ${SQL_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -24,11 +24,11 @@ server:
     key-store-type:
       JKS
     key-store-password:
-      server_pass1BIB23342
+      ${KEYSTORE_PASSWORD}
     key-alias:
       server_cert1BIB23342
 
 jwt:
   accessExpiration: 900000
   refreshExpiration: 604800000
-  secret: SecretniyJwtKluchBIB230111131131
+  secret: ${JWT_SECRET}
