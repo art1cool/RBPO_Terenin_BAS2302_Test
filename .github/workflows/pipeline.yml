@@ -20,7 +20,7 @@ jobs:
           POSTGRES_DB: postgres
           POSTGRES_USER: ${{ secrets.SQL_USERNAME }}
           POSTGRES_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-        image: postgres:17
+        image: postgres:15
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
