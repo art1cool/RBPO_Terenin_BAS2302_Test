@@ -17,16 +17,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Permission for mvnw
-        run: chmod +x ./mvnw
-
       - name: Build
         env:
           SQL_USERNAME: ${{ secrets.SQL_USERNAME }}
           SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        run: ./mvnw clean package
+        run: mvn clean package
+
+      - name: Test
+        run: mvn test
 
       - name: Artifacts
         uses: actions/upload-artifact@v4
