@@ -6,7 +6,6 @@ import service.App;
 class DemoApplicationTest {
 
     @Test
-    void contextLoads() {
-}
+    void contextLoads() {}
 
 }
