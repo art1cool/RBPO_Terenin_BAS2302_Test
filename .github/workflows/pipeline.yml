@@ -2,9 +2,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
   build:
@@ -12,21 +9,63 @@ jobs:
 
     container:
       image: maven:3.9-eclipse-temurin-21
-
+    env:
+      SQL_USERNAME: ${{ secrets.SQL_USERNAME }}
+      SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+    services:
+      postgres:
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: ${{ secrets.SQL_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+        image: postgres:17
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
+      - run: |
+          echo $SQL_USERNAME
+          echo $SQL_PASSWORD
+          echo $KEYSTORE_PASSWORD
+          echo $JWT_SECRET
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Build
-        env:
-          SQL_USERNAME: ${{ secrets.SQL_USERNAME }}
-          SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: mvn clean package -DskipTests
 
       - name: Test
-        run: mvn test
+        run: |
+          cat > src/main/resources/application.yml << EOF
+          spring.application.name=DemoApplication
+          spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+          spring.datasource.username=${SQL_USERNAME}
+          spring.datasource.password=${SQL_PASSWORD}
+          spring.jpa.hibernate.ddl-auto=none
+          spring.jpa.show-sql=true
+          spring.jpa.properties.hibernate.format_sql=true
+          spring.sql.init.platform=postgresql
+          server.port=8080
+          logging.level.org.springframework.security=DEBUG
+          logging.level.org.springframework.web=DEBUG
+          jwt.secret=${{ secrets.JWT_SECRET }}
+          jwt.accessExpiration=900000
+          jwt.refreshExpiration=604800000
+          server.ssl.enabled=false
+          server.ssl.key-store=classpath:server_cert1BIB23342.jks
+          server.ssl.key-store-type=JKS
+          server.ssl.key-store-password=${{ secrets.KEYSTORE_PASSWORD }}
+          server.ssl.key-alias=server_cert1BIB23342
+          EOF
+      - run: apt-get update && apt-get install -y postgresql-client
+      - run: sleep 25
+      - run: mvn test
 
       - name: Artifacts
         uses: actions/upload-artifact@v4
