@@ -23,7 +23,7 @@ jobs:
           SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Test
         run: mvn test
