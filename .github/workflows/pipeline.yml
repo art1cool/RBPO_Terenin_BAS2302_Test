@@ -29,11 +29,6 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - run: |
-          echo ${{ secrets.SQL_USERNAME }}
-          echo ${{ secrets.SQL_PASSWORD }}
-          echo ${{ secrets.KEYSTORE_PASSWORD }}
-          echo ${{ secrets.JWT_SECRET }}
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -51,7 +46,7 @@ jobs:
               url: jdbc:postgresql://localhost:5432/postgres
               username: ${SQL_USERNAME}
               password: ${SQL_PASSWORD}
-              driver-class-name: org.postgresql.Driver
+              #driver-class-name: org.postgresql.Driver
           
             jpa:
               hibernate:
@@ -62,9 +57,9 @@ jobs:
                 mode: always
           
           server:
-            port: 8080
+            port: 8443
             ssl:
-              enabled: false
+              enabled: true
               key-store:
                 classpath:server_cert1BIB23342.jks
               key-store-type:
