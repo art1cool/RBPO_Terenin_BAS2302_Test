@@ -2,6 +2,11 @@ on:
   push:
     branches:
       - master
+env:
+      SQL_USERNAME: ${{ secrets.SQL_USERNAME }}
+      SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
 jobs:
   build:
@@ -9,17 +14,12 @@ jobs:
 
     container:
       image: maven:3.9-eclipse-temurin-21
-    env:
-      SQL_USERNAME: ${{ secrets.SQL_USERNAME }}
-      SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     services:
       postgres:
         env:
           POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: ${{ secrets.SQL_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.SQL_PASSWORD }}
         image: postgres:15
         options: >-
           --health-cmd pg_isready
