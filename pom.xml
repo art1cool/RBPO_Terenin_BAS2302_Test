@@ -99,7 +99,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <mainClass>service.App</mainClass>
+                    <mainClass>App</mainClass>
                 </configuration>
             </plugin>
 
