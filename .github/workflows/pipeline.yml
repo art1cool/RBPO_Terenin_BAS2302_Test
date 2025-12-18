@@ -1,27 +1,26 @@
 on:
-  push:
-    branches:
-      - master
+  pull_request:
+    branches: [ master ]
+    types: [opened, synchronize, reopened]
+
+env:
+  DB_USER: ${{ secrets.SQL_USERNAME }}
+  DB_PASS: ${{ secrets.SQL_PASSWORD }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  KEY_STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
 
 jobs:
-  build:
+  mvn_test:
+    name: MVN Test
     runs-on: ubuntu-latest
-
     container:
       image: maven:3.9-eclipse-temurin-21
-
-    env:
-      SQL_USERNAME: ${{ secrets.SQL_USERNAME }}
-      SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-
     services:
       postgres:
         env:
           POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: ${{ secrets.SQL_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.SQL_PASSWORD }}
         image: postgres:15
         options: >-
           --health-cmd pg_isready
@@ -30,73 +29,57 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build
-        run: mvn clean package -DskipTests
-
-      - name: Create application.yml with actual values
-        run: |
+      - uses: actions/checkout@v4
+      - run: |
           cat > src/main/resources/application.yml << EOF
           spring:
             application:
-              name: DemoApplication
-          
+              name: TestTwo
             datasource:
-              url: jdbc:postgresql://localhost:5432/postgres
-              username: postgres
-              password: postgres
-              #driver-class-name: org.postgresql.Driver
-          
+              url: jdbc:postgresql://postgres:5432/postgres
+              username: ${{ secrets.SQL_USERNAME }}
+              password: ${{ secrets.SQL_PASSWORD }}
             jpa:
               hibernate:
-                ddl-auto: update
+                ddl-auto: none
               show-sql: true
+              properties:
+                hibernate:
+                  format_sql: true
+              defer-datasource-initialization: true
             sql:
               init:
                 mode: always
-          
+                platform: postgresql
           server:
             port: 8080
             ssl:
               enabled: false
-              key-store:
-                classpath:server_cert1BIB23342.jks
-              key-store-type: JKS
-              key-store-password: $KEYSTORE_PASSWORD
-              key-alias: server_cert1BIB23342
-          
+          logging:
+            level:
+              org.springframework.security: DEBUG
+              org.springframework.web: DEBUG
           jwt:
-            secret: $JWT_SECRET
-            accessExpiration: 900000
-            refreshExpiration: 604800000
+            secret: ${{ secrets.JWT_SECRET }}
+            accessExpiration: 3600000
+            refreshExpiration: 86400000
           EOF
+      - run: apt-get update && apt-get install -y postgresql-client
+      - run: sleep 15
+      - run: mvn test
 
-      - name: Install PostgreSQL client
-        run: apt-get update && apt-get install -y postgresql-client
-
-      - name: Wait for PostgreSQL
-        run: |
-          for i in {1..30}; do
-            if pg_isready -h localhost -p 5432; then
-              echo "PostgreSQL is ready"
-              break
-            fi
-            echo "Waiting for PostgreSQL..."
-            sleep 2
-          done
-
-      - name: Debug - Show created application.yml
-        run: cat src/main/resources/application.yml
-
-      - name: Run tests
-        run: mvn test
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+  build:
+    name: Build
+    needs: mvn_test
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9-eclipse-temurin-21
+    steps:
+      - uses: actions/checkout@v4
+      - run: mvn clean package -DskipTests
+      - uses: actions/upload-artifact@v4
         with:
-          name: app-jar
-          path: ./target/*.jar
+          name: java-app
+          path: target/*.jar
+          retention-days: 14
