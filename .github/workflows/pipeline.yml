@@ -47,8 +47,8 @@ jobs:
           
             datasource:
               url: jdbc:postgresql://localhost:5432/postgres
-              username: $SQL_USERNAME
-              password: $SQL_PASSWORD
+              username: postgres
+              password: postgres
               #driver-class-name: org.postgresql.Driver
           
             jpa:
