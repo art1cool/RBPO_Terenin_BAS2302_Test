@@ -1,12 +1,13 @@
 on:
   push:
-    branches: [ master ]
+    branches:
+    - master
 
-#env:
-#  DB_USER: ${{ secrets.SQL_USERNAME }}
-#  DB_PASS: ${{ secrets.SQL_PASSWORD }}
-#  JWT_SECRET: ${{ secrets.JWT_SECRET }}
-#  KEY_STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+env:
+  SQL_USERNAME: ${{ secrets.SQL_USERNAME }}
+  SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
 
 jobs:
   mvn_test:
@@ -18,8 +19,8 @@ jobs:
       postgres:
         env:
           POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: ${{ secrets.SQL_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.SQL_PASSWORD }}
         image: postgres:15
         options: >-
           --health-cmd pg_isready
@@ -37,8 +38,8 @@ jobs:
               name: TestTwo
             datasource:
               url: jdbc:postgresql://postgres:5432/postgres
-              username: postgres
-              password: postgres
+              username: ${{ secrets.SQL_USERNAME }}
+              password: ${{ secrets.SQL_PASSWORD }}
             jpa:
               hibernate:
                 ddl-auto: none
@@ -61,8 +62,8 @@ jobs:
               org.springframework.web: DEBUG
           jwt:
             secret: ${{ secrets.JWT_SECRET }}
-            accessExpiration: 3600000
-            refreshExpiration: 86400000
+            accessExpiration: 900000
+            refreshExpiration: 604800000
           EOF
       - run: apt-get update && apt-get install -y postgresql-client
       - run: sleep 15
@@ -81,4 +82,3 @@ jobs:
         with:
           name: java-app
           path: target/*.jar
-          retention-days: 14
