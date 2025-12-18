@@ -38,14 +38,6 @@ public class UserController {
                 .body(userService.addUser(user));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserEntity> registerUser(
-            @Valid @RequestBody User user){
-        return ResponseEntity.status(CREATED)
-                .header("Name", user.getName())
-                .body(userService.addUser(user));
-    }
-
     @DeleteMapping("by-name/{name}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> removeUser(@PathVariable String name) {
