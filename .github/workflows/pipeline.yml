@@ -1,7 +1,6 @@
 on:
-  pull_request:
+  push:
     branches: [ master ]
-    types: [opened, synchronize, reopened]
 
 env:
   DB_USER: ${{ secrets.SQL_USERNAME }}
