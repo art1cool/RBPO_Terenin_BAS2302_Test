@@ -2,11 +2,6 @@ on:
   push:
     branches:
       - master
-env:
-      SQL_USERNAME: ${{ secrets.SQL_USERNAME }}
-      SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
 jobs:
   build:
@@ -14,6 +9,12 @@ jobs:
 
     container:
       image: maven:3.9-eclipse-temurin-21
+
+    env:
+      SQL_USERNAME: ${{ secrets.SQL_USERNAME }}
+      SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     services:
       postgres:
         env:
@@ -37,7 +38,7 @@ jobs:
 
       - name: Test
         run: |
-          cat > src/main/resources/application.yml << 'EOF'
+          cat > src/main/resources/application.yml << EOF
           spring:
             application:
               name: DemoApplication
@@ -57,9 +58,9 @@ jobs:
                 mode: always
           
           server:
-            port: 8443
+            port: 8080
             ssl:
-              enabled: true
+              enabled: false
               key-store:
                 classpath:server_cert1BIB23342.jks
               key-store-type:
