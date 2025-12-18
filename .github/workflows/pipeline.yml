@@ -38,66 +38,65 @@ jobs:
       - name: Build
         run: mvn clean package -DskipTests
 
-      - name: Create application.yml
+      - name: Create application.yml with actual values
         run: |
           cat > src/main/resources/application.yml << EOF
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-        jdbc:
-          lob:
-            non_contextual_creation: true
-  sql:
-    init:
-      mode: always
+          spring:
+            application:
+              name: DemoApplication
+          
+            datasource:
+              url: jdbc:postgresql://localhost:5432/postgres
+              username: $SQL_USERNAME
+              password: $SQL_PASSWORD
+              #driver-class-name: org.postgresql.Driver
+          
+            jpa:
+              hibernate:
+                ddl-auto: update
+              show-sql: true
+            sql:
+              init:
+                mode: always
+          
+          server:
+            port: 8080
+            ssl:
+              enabled: false
+              key-store:
+                classpath:server_cert1BIB23342.jks
+              key-store-type: JKS
+              key-store-password: $KEYSTORE_PASSWORD
+              key-alias: server_cert1BIB23342
+          
+          jwt:
+            secret: $JWT_SECRET
+            accessExpiration: 900000
+            refreshExpiration: 604800000
+          EOF
 
-server:
-  port: 8080
-  ssl:
-    enabled: false
+      - name: Install PostgreSQL client
+        run: apt-get update && apt-get install -y postgresql-client
 
-jwt:
-  secret: ${JWT_SECRET}
-  accessExpiration: 900000
-  refreshExpiration: 604800000
-  EOF
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h localhost -p 5432; then
+              echo "PostgreSQL is ready"
+              break
+            fi
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
 
-- name: Install PostgreSQL client
-  run: apt-get update && apt-get install -y postgresql-client
+      - name: Debug - Show created application.yml
+        run: cat src/main/resources/application.yml
 
-- name: Wait for PostgreSQL
-  run: |
-    for i in {1..30}; do
-      if PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "SELECT 1;" >/dev/null 2>&1; then
-        echo "PostgreSQL is ready!"
-        break
-      fi
-      echo "Waiting for PostgreSQL... ($i/30)"
-      sleep 2
-    done
+      - name: Run tests
+        run: mvn test
 
-- name: Check database connection
-  run: |
-    echo "Testing PostgreSQL connection..."
-    PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "SELECT version();"
-    PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "\l"
-
-- name: Run tests
-  run: mvn test
-
-- name: Artifacts
-  uses: actions/upload-artifact@v4
-  with:
-    name: app-jar
-    path: ./target/*.jar
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: ./target/*.jar
