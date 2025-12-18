@@ -72,11 +72,17 @@ jobs:
       - name: Build
         run: mvn clean package -DskipTests
 
+      - name: Run test
+        run: mvn test
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: mvn clean package -DskipTests
+
       - name: Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: app-jar
           path: ./target/*.jar
-
-      - name: Run test
-        run: mvn test
