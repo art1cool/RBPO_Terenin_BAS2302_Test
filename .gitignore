@@ -37,4 +37,4 @@ build/
 
 ### Mac OS ###
 .DS_Store
-resources/server_cert1BIB23342.jks
+#resources/server_cert1BIB23342.jks
