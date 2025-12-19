@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class ArtistEntity {
+public class    ArtistEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

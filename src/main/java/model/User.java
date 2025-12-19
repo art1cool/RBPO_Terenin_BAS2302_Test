@@ -1,10 +1,11 @@
 package model;
-
+//1
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import java.util.List; // Добавляем импорт
 
 @Data
 public class User {
@@ -22,4 +23,6 @@ public class User {
             message = "Password must contain upper, lower case letters, digit and special character"
     )
     private String password;
+
+    private List<String> playlists; // Добавляем поле для списка имен плейлистов
 }

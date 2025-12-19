@@ -1,5 +1,5 @@
 package repository;
-
+//1
 import entity.UserSessionEntity;
 import enums.SessionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,4 +33,7 @@ public interface UserSessionRepository extends JpaRepository<UserSessionEntity, 
     Optional<UserSessionEntity> findByUserIdAndDeviceInfo(UUID userId, String deviceInfo);
 
     Optional<UserSessionEntity> findByUserIdAndDeviceInfoAndStatus(UUID userId, String deviceInfo, SessionStatus status);
+
+    // Добавляем метод для поиска всех сессий пользователя
+    List<UserSessionEntity> findByUserId(UUID userId);
 }

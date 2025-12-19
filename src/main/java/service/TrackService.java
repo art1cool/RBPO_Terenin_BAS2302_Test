@@ -1,15 +1,16 @@
 package service;
-//1
+//2
+import entity.AlbumEntity;
+import entity.ArtistEntity;
+import entity.TrackEntity;
 import lombok.RequiredArgsConstructor;
+import model.Track;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import model.Track;
-import entity.TrackEntity;
-import repository.TrackRepository;
-import entity.ArtistEntity;
-import repository.ArtistRepository;
-import entity.AlbumEntity;
 import repository.AlbumRepository;
+import repository.ArtistRepository;
+import repository.TrackRepository;
+import util.MappingUtil;
 
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -19,7 +20,8 @@ import java.util.regex.Pattern;
 public class TrackService {
     private final TrackRepository trackRepository;
     private final ArtistRepository artistRepository;
-    private final AlbumRepository albumRepository; // Добавляем
+    private final AlbumRepository albumRepository;
+    private final MappingUtil mappingUtil;
 
     private static final String DURATION_REGEX = "^\\d{1,2}:\\d{2}(?::\\d{2})?$";
 
@@ -41,10 +43,8 @@ public class TrackService {
             throw new IllegalArgumentException("Invalid duration format. Expected x:xx, xx:xx, x:xx:xx or xx:xx:xx");
         }
 
-        TrackEntity trackEntity = new TrackEntity();
-        trackEntity.setName(track.getName());
+        TrackEntity trackEntity = mappingUtil.toEntity(track);
         trackEntity.setArtist(artist);
-        trackEntity.setDuration(track.getDuration());
 
         // Если указан альбом, находим и устанавливаем его
         if (track.getAlbum() != null && track.getAlbum().getName() != null) {
@@ -59,7 +59,10 @@ public class TrackService {
     }
 
     public void removeTrack(String name) {
-        trackRepository.delete(getTrack(name));
+        TrackEntity entity = trackRepository.findByName(name);
+        if (entity != null) {
+            trackRepository.delete(entity);
+        }
     }
 
     @Transactional

@@ -1,5 +1,5 @@
 package repository;
-//1
+//2
 import entity.PlaylistTrackEntity;
 import entity.PlaylistEntity;
 import entity.TrackEntity;
@@ -31,4 +31,14 @@ public interface PlaylistTrackRepository extends JpaRepository<PlaylistTrackEnti
     // Получить количество треков в плейлисте
     @Query("SELECT COUNT(pt) FROM PlaylistTrackEntity pt WHERE pt.playlist = :playlist")
     int countByPlaylist(@Param("playlist") PlaylistEntity playlist);
+
+    // Удалить все связи для заданного плейлиста
+    @Modifying
+    @Query("DELETE FROM PlaylistTrackEntity pt WHERE pt.playlist = :playlist")
+    void deleteByPlaylist(@Param("playlist") PlaylistEntity playlist);
+
+    // Удалить все связи для заданного трека
+    @Modifying
+    @Query("DELETE FROM PlaylistTrackEntity pt WHERE pt.track = :track")
+    void deleteByTrack(@Param("track") TrackEntity track);
 }
