@@ -56,9 +56,17 @@ jobs:
                 mode: always
                 platform: postgresql
           server:
-            port: 8080
+            port: 8443
             ssl:
-              enabled: false
+              enabled: true
+              key-store:
+                classpath:server_cert1BIB23342.jks
+              key-store-type:
+                JKS
+              key-store-password:
+                ${{ secrets.KEYSTORE_PASSWORD }}
+              key-alias:
+                server_cert1BIB23342
           logging:
             level:
               org.springframework.security: DEBUG
